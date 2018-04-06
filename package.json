@@ -5,7 +5,9 @@
   "dependencies": {
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "soundfont-player": "^0.10.6",
+    "unstated": "^1.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
