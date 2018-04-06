@@ -1,5 +1,6 @@
 .Piano {
   padding: 8em;
+  transform: scale(-1, 1);
 }
 
 ul {
