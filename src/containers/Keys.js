@@ -6,7 +6,7 @@ export default class KeysContainer extends Container {
       .reverse()
       .map(note => ({
         name: note,
-        active: true
+        active: false
       }))
   };
 

@@ -9,7 +9,7 @@ import KeysContainer, { keysContainer } from '../containers/Keys';
 export default class App extends React.Component {
   state = { player: null };
 
-  handleKeyDown = event => {
+  getNoteFromEvent = event => {
     let note;
     if (event.key === 'z' || event.key === 'Z') note = 'c';
     if (event.key === 's' || event.key === 'S') note = 'cs';
@@ -23,11 +23,22 @@ export default class App extends React.Component {
     if (event.key === 'n' || event.key === 'N') note = 'a';
     if (event.key === 'j' || event.key === 'J') note = 'as';
     if (event.key === 'm' || event.key === 'M') note = 'b';
+    return note;
+  };
 
+  handleKeyUp = event => {
+    let note = this.getNoteFromEvent(event);
     if (note) {
+      keysContainer.toggleNote(note, false);
+    }
+  };
+
+  handleKeyDown = event => {
+    let note = this.getNoteFromEvent(event);
+    if (note) {
+      keysContainer.toggleNote(note, true);
       if (note.includes('s')) note = note[0] + '#';
       this.state.player.play(note.toUpperCase() + '4');
-      keysContainer.toggleNote(note, true);
     }
   };
 
@@ -40,7 +51,12 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div className="App" onKeyDown={this.handleKeyDown} tabIndex={1}>
+      <div
+        tabIndex={1}
+        className="App"
+        onKeyUp={this.handleKeyUp}
+        onKeyDown={this.handleKeyDown}
+      >
         <Subscribe to={[KeysContainer]}>
           {keys => <Piano player={this.state.player} keys={keys} />}
         </Subscribe>
