@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import './Piano.css';
 
-export default class Piano extends React.Component {
+export default class Piano extends Component {
   render() {
     return (
       <div className="Piano">

@@ -14,9 +14,15 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', socket => {
+  socket.on('noteOn', data => {
+    socket.broadcast.emit('noteOn', data);
+  });
+  socket.on('noteOff', data => {
+    socket.broadcast.emit('noteOff', data);
+  });
   console.log('a user connected');
 });
 
 server.listen(4000, () => {
-  console.log('listening on *:3000');
+  console.log('listening on *:4000');
 });
