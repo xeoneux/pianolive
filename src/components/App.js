@@ -5,10 +5,11 @@ import Soundfont from 'soundfont-player';
 
 import './App.css';
 import Piano from './Piano/Piano';
-import { getRandomName, getRandomColor } from '../tools/Random';
+import { getRandomName, getRandomColor, hexToRgb } from '../tools/Random';
 import KeysContainer, { keysContainer } from '../containers/Keys';
 import RoomContainer, { roomContainer } from '../containers/Room';
 import { getNoteForKey } from '../tools/Marker';
+import { firework } from '../tools/Canvas';
 
 const nameDynamicStyle = color => ({
   textShadow: `0 0 5px #fff, 0 0 10px #fff, 0 0 20px ${color}, 0 0 30px ${color}`
@@ -17,13 +18,19 @@ const nameDynamicStyle = color => ({
 export default class App extends React.Component {
   state = { player: null, socket: null, modal: false };
 
-  toggle = (note, state, emit) => {
+  toggle = (note, state, emit, rgb) => {
+    const color = rgb || roomContainer.state.rgb;
     if (note) {
-      keysContainer.toggleNote(note, state);
+      keysContainer.toggleNote(note, color, state);
 
       const socket = this.state.socket;
       if (emit && socket) {
-        socket.emit(state ? 'noteOn' : 'noteOff', note);
+        const data = {
+          note,
+          user: roomContainer.state.user,
+          color: roomContainer.state.rgb
+        };
+        socket.emit(state ? 'noteOn' : 'noteOff', JSON.stringify(data));
       }
 
       const player = this.state.player;
@@ -50,8 +57,14 @@ export default class App extends React.Component {
         () => {
           const socket = this.state.socket;
           if (socket) {
-            socket.on('noteOn', note => this.toggle(note, true, false));
-            socket.on('noteOff', note => this.toggle(note, false, false));
+            socket.on('noteOn', data => {
+              data = JSON.parse(data);
+              this.toggle(data.note, true, false, data.color);
+            });
+            socket.on('noteOff', data => {
+              data = JSON.parse(data);
+              this.toggle(data.note, false, false, data.color);
+            });
           }
         }
       );
@@ -59,8 +72,14 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
+    // firework(this.canvas);
     this.setState({ modal: true });
-    roomContainer.setState({ user: getRandomName(), color: getRandomColor() });
+    const color = getRandomColor();
+    roomContainer.setState({
+      color,
+      rgb: hexToRgb(color),
+      user: getRandomName()
+    });
   }
 
   render() {
@@ -71,6 +90,7 @@ export default class App extends React.Component {
         onKeyUp={this.handleKeyUp}
         onKeyDown={this.handleKeyDown}
       >
+        <canvas className="Canvas" ref={el => (this.canvas = el)} />
         <Subscribe to={[KeysContainer, RoomContainer]}>
           {(keys, room) => (
             <Piano keys={keys} room={room} toggle={this.toggle} />

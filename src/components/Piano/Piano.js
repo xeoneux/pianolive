@@ -22,8 +22,9 @@ export default class Piano extends Component {
               style={
                 note.active
                   ? {
-                      background:
-                        `linear-gradient(to bottom, #fff 0%,${this.props.room.state.color} 100%)`
+                      background: `linear-gradient(to bottom, #fff 0%, rgba(${
+                        note.color
+                      }, 0.7) 100%)`
                     }
                   : null
               }

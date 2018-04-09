@@ -6,14 +6,16 @@ export default class KeysContainer extends Container {
       .reverse()
       .map(note => ({
         name: note,
+        color: 'red',
         active: false
       }))
   };
 
-  toggleNote = (key, active) => {
+  toggleNote = (key, color, active) => {
     this.setState({
       notes: this.state.notes.map(note => {
-        if (key === note.name) return Object.assign({}, note, { active });
+        if (key === note.name)
+          return Object.assign({}, note, { color, active });
         return note;
       })
     });
