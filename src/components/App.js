@@ -6,9 +6,25 @@ import Soundfont from 'soundfont-player';
 import './App.css';
 import Piano from './Piano/Piano';
 import KeysContainer, { keysContainer } from '../containers/Keys';
+import RoomContainer, { roomContainer } from '../containers/Room';
 
 export default class App extends React.Component {
   state = { player: null, socket: null };
+
+  toggle = (note, state, emit) => {
+    if (note) {
+      keysContainer.toggleNote(note, state);
+
+      const socket = this.state.socket;
+      if (emit && socket) {
+        socket.emit(state ? 'noteOn' : 'noteOff', note);
+      }
+
+      const player = this.state.player;
+      if (note.includes('s')) note = note[0] + '#';
+      if (state && player) player.play(note.toUpperCase() + '4');
+    }
+  };
 
   getNoteFromEvent = event => {
     let note;
@@ -29,20 +45,12 @@ export default class App extends React.Component {
 
   handleKeyUp = event => {
     let note = this.getNoteFromEvent(event);
-    if (note) {
-      keysContainer.toggleNote(note, false);
-      this.state.socket.emit('noteOff', note);
-    }
+    this.toggle(note, false, true);
   };
 
   handleKeyDown = event => {
     let note = this.getNoteFromEvent(event);
-    if (note) {
-      keysContainer.toggleNote(note, true);
-      this.state.socket.emit('noteOn', note);
-      if (note.includes('s')) note = note[0] + '#';
-      this.state.player.play(note.toUpperCase() + '4');
-    }
+    this.toggle(note, true, true);
   };
 
   componentWillMount() {
@@ -51,14 +59,11 @@ export default class App extends React.Component {
       this.setState(
         { player: piano, socket: io('http://localhost:4000/') },
         () => {
-          this.state.socket.on('noteOn', note => {
-            keysContainer.toggleNote(note, true);
-            if (note.includes('s')) note = note[0] + '#';
-            this.state.player.play(note.toUpperCase() + '4');
-          });
-          this.state.socket.on('noteOff', note => {
-            keysContainer.toggleNote(note, false);
-          });
+          const socket = this.state.socket;
+          if (socket) {
+            socket.on('noteOn', note => this.toggle(note, true, false));
+            socket.on('noteOff', note => this.toggle(note, false, false));
+          }
         }
       );
     });
@@ -72,8 +77,10 @@ export default class App extends React.Component {
         onKeyUp={this.handleKeyUp}
         onKeyDown={this.handleKeyDown}
       >
-        <Subscribe to={[KeysContainer]}>
-          {keys => <Piano player={this.state.player} keys={keys} />}
+        <Subscribe to={[KeysContainer, RoomContainer]}>
+          {(keys, room) => (
+            <Piano player={this.state.player} keys={keys} room={room} />
+          )}
         </Subscribe>
       </div>
     );
