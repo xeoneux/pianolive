@@ -5,11 +5,16 @@ import Soundfont from 'soundfont-player';
 
 import './App.css';
 import Piano from './Piano/Piano';
+import { getRandomName, getRandomColor } from '../tools/Random';
 import KeysContainer, { keysContainer } from '../containers/Keys';
 import RoomContainer, { roomContainer } from '../containers/Room';
 
+const nameDynamicStyle = color => ({
+  textShadow: `0 0 5px #fff, 0 0 10px #fff, 0 0 20px ${color}, 0 0 30px ${color}`
+});
+
 export default class App extends React.Component {
-  state = { player: null, socket: null };
+  state = { player: null, socket: null, modal: false };
 
   toggle = (note, state, emit) => {
     if (note) {
@@ -69,6 +74,11 @@ export default class App extends React.Component {
     });
   }
 
+  componentDidMount() {
+    this.setState({ modal: true });
+    roomContainer.setState({ user: getRandomName(), color: getRandomColor() });
+  }
+
   render() {
     return (
       <div
@@ -77,9 +87,21 @@ export default class App extends React.Component {
         onKeyUp={this.handleKeyUp}
         onKeyDown={this.handleKeyDown}
       >
-        <Subscribe to={[KeysContainer, RoomContainer]}>
-          {(keys, room) => (
-            <Piano player={this.state.player} keys={keys} room={room} />
+        <Subscribe to={[KeysContainer]}>
+          {keys => <Piano keys={keys} toggle={this.toggle} />}
+        </Subscribe>
+        <Subscribe to={[RoomContainer]}>
+          {room => (
+            <form>
+              <input
+                className="Name"
+                style={nameDynamicStyle(room.state.color)}
+                value={room.state.user}
+                onChange={event => {
+                  roomContainer.setState({ user: event.target.value });
+                }}
+              />
+            </form>
           )}
         </Subscribe>
       </div>
