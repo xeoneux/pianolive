@@ -79,7 +79,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    // firework(this.canvas);
+    firework(this.canvas);
     this.setState({ modal: true });
     const color = getRandomColor();
     roomContainer.setState({
