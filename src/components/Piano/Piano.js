@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 
 import './Piano.css';
 
+import { getKeyForNote } from '../../tools/Marker';
+
 export default class Piano extends Component {
   render() {
     return (
@@ -17,8 +19,20 @@ export default class Piano extends Component {
                 (note.active ? ` active` : ``) +
                 (note.name.includes('s') ? ` black` : ` white`)
               }
+              style={
+                note.active
+                  ? {
+                      background:
+                        `linear-gradient(to bottom, #fff 0%,${this.props.room.state.color} 100%)`
+                    }
+                  : null
+              }
               key={note.name}
-            />
+            >
+              <p className="text">
+                {note.name.includes('s') ? '' : getKeyForNote(note.name)}
+              </p>
+            </li>
           ))}
         </ul>
       </div>

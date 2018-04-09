@@ -8,6 +8,7 @@ import Piano from './Piano/Piano';
 import { getRandomName, getRandomColor } from '../tools/Random';
 import KeysContainer, { keysContainer } from '../containers/Keys';
 import RoomContainer, { roomContainer } from '../containers/Room';
+import { getNoteForKey } from '../tools/Marker';
 
 const nameDynamicStyle = color => ({
   textShadow: `0 0 5px #fff, 0 0 10px #fff, 0 0 20px ${color}, 0 0 30px ${color}`
@@ -31,30 +32,13 @@ export default class App extends React.Component {
     }
   };
 
-  getNoteFromEvent = event => {
-    let note;
-    if (event.key === 'z' || event.key === 'Z') note = 'c';
-    if (event.key === 's' || event.key === 'S') note = 'cs';
-    if (event.key === 'x' || event.key === 'X') note = 'd';
-    if (event.key === 'd' || event.key === 'D') note = 'ds';
-    if (event.key === 'c' || event.key === 'C') note = 'e';
-    if (event.key === 'v' || event.key === 'V') note = 'f';
-    if (event.key === 'g' || event.key === 'G') note = 'fs';
-    if (event.key === 'b' || event.key === 'B') note = 'g';
-    if (event.key === 'h' || event.key === 'H') note = 'gs';
-    if (event.key === 'n' || event.key === 'N') note = 'a';
-    if (event.key === 'j' || event.key === 'J') note = 'as';
-    if (event.key === 'm' || event.key === 'M') note = 'b';
-    return note;
-  };
-
   handleKeyUp = event => {
-    let note = this.getNoteFromEvent(event);
+    let note = getNoteForKey(event.key);
     this.toggle(note, false, true);
   };
 
   handleKeyDown = event => {
-    let note = this.getNoteFromEvent(event);
+    let note = getNoteForKey(event.key);
     this.toggle(note, true, true);
   };
 
@@ -87,8 +71,10 @@ export default class App extends React.Component {
         onKeyUp={this.handleKeyUp}
         onKeyDown={this.handleKeyDown}
       >
-        <Subscribe to={[KeysContainer]}>
-          {keys => <Piano keys={keys} toggle={this.toggle} />}
+        <Subscribe to={[KeysContainer, RoomContainer]}>
+          {(keys, room) => (
+            <Piano keys={keys} room={room} toggle={this.toggle} />
+          )}
         </Subscribe>
         <Subscribe to={[RoomContainer]}>
           {room => (
