@@ -53,7 +53,14 @@ export default class App extends React.Component {
     const AC = window.AudioContext || window.webkitAudioContext;
     Soundfont.instrument(new AC(), 'acoustic_grand_piano').then(piano => {
       this.setState(
-        { player: piano, socket: io('http://localhost:4000/') },
+        {
+          player: piano,
+          socket: io(
+            process.env.NODE_ENV === 'production'
+              ? '/'
+              : 'http://localhost:4000/'
+          )
+        },
         () => {
           const socket = this.state.socket;
           if (socket) {

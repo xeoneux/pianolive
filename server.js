@@ -23,6 +23,6 @@ io.on('connection', socket => {
   console.log('a user connected');
 });
 
-server.listen(4000, () => {
-  console.log('listening on *:4000');
+server.listen(process.env.PORT || 4000, () => {
+  console.log(`listening on *:4000`);
 });
