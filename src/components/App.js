@@ -121,6 +121,7 @@ export default class App extends React.Component {
                   roomContainer.setState({ user: event.target.value });
                 }}
               />
+              <p className="Room">[{room.state.room}]</p>
             </form>
           )}
         </Subscribe>

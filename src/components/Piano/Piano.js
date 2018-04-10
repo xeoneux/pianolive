@@ -30,7 +30,10 @@ export default class Piano extends Component {
               }
               key={note.name}
             >
-              <p className="text">
+              <p
+                className="text"
+                style={note.active ? { color: 'white' } : null}
+              >
                 {note.name.includes('s') ? '' : getKeyForNote(note.name)}
               </p>
             </li>

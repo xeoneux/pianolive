@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=East+Sea+Dokdo');
+@import url('https://fonts.googleapis.com/css?family=Gugi');
 
 .App {
   width: 100vw;
@@ -13,6 +14,14 @@
   text-align: center;
   background: transparent;
   font-family: 'East Sea Dokdo', cursive;
+}
+
+.Room {
+  width: 100%;
+  color: grey;
+  font-size: 20px;
+  text-align: center;
+  font-family: 'Gugi', cursive;
 }
 
 .Canvas {
