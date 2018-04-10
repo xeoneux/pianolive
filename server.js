@@ -40,12 +40,18 @@ io.on('connection', socket => {
     socket.in(room).broadcast.emit('noteOff', data);
   });
   socket.on('disconnect', () => {
-    const room = pianists[socket.id].room;
-    console.log(pianists[socket.id].user, 'left', room);
-    delete pianists[socket.id];
-    socket
-      .in(room)
-      .emit('usersInRoom', JSON.stringify({ users: fetchUsers(socket, room) }));
+    const user = pianists[socket.id];
+    if (user) {
+      const room = pianists[socket.id].room;
+      console.log(pianists[socket.id].user, 'left', room);
+      delete pianists[socket.id];
+      socket
+        .in(room)
+        .emit(
+          'usersInRoom',
+          JSON.stringify({ users: fetchUsers(socket, room) })
+        );
+    }
   });
 });
 

@@ -80,7 +80,11 @@ export default class App extends React.Component {
           if (socket) {
             socket.on('usersInRoom', data => {
               data = JSON.parse(data);
-              usersContainer.setState({ users: data.users });
+              usersContainer.setState({
+                users: data.users.filter(
+                  user => user !== roomContainer.state.user
+                )
+              });
             });
             socket.on('noteOn', data => {
               data = JSON.parse(data);
