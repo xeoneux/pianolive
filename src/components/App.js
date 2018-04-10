@@ -27,6 +27,7 @@ export default class App extends React.Component {
       if (emit && socket) {
         const data = {
           note,
+          room: roomContainer.state.room,
           user: roomContainer.state.user,
           color: roomContainer.state.rgb
         };
@@ -55,6 +56,7 @@ export default class App extends React.Component {
   componentWillMount() {
     const AC = window.AudioContext || window.webkitAudioContext;
     const hash = window.location.hash.substring(1);
+    console.log(hash);
     const color = getRandomColor();
     roomContainer.setState({
       color,
@@ -75,8 +77,9 @@ export default class App extends React.Component {
         () => {
           const socket = this.state.socket;
           if (socket) {
-            socket.on('connect', () => {
-              socket.emit('room', hash);
+            socket.on('usersInRoom', data => {
+              data = JSON.parse(data);
+              console.log(data);
             });
             socket.on('noteOn', data => {
               data = JSON.parse(data);
@@ -85,6 +88,15 @@ export default class App extends React.Component {
             socket.on('noteOff', data => {
               data = JSON.parse(data);
               this.toggle(data.note, false, false, data.color);
+            });
+            socket.on('connect', () => {
+              socket.emit(
+                'room',
+                JSON.stringify({
+                  room: hash,
+                  user: roomContainer.state.user
+                })
+              );
             });
           }
         }
