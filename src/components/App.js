@@ -16,7 +16,7 @@ const nameDynamicStyle = color => ({
 });
 
 export default class App extends React.Component {
-  state = { player: null, socket: null, modal: false };
+  state = { player: null, socket: null };
 
   toggle = (note, state, emit, rgb) => {
     const color = rgb || roomContainer.state.rgb;
@@ -35,7 +35,10 @@ export default class App extends React.Component {
 
       const player = this.state.player;
       if (note.includes('s')) note = note[0] + '#';
-      if (state && player) player.play(note.toUpperCase() + '4');
+      if (state && player) {
+        this.state.firework(color);
+        player.play(note.toUpperCase() + '4');
+      }
     }
   };
 
@@ -79,8 +82,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    firework(this.canvas);
-    this.setState({ modal: true });
+    this.setState({ firework: firework(this.canvas) });
     const color = getRandomColor();
     roomContainer.setState({
       color,

@@ -23,25 +23,10 @@ export const firework = canvas => {
       drawNode(node);
       if (node.dead) nodes.splice(l, 1);
     }
-
-    if (nodes.length < 10) {
-      l = rand(4, 1) | 0;
-      while (l--) {
-        nodes.push(
-          makeNode(
-            (Math.random() * w) | 0,
-            (Math.random() * h) | 0,
-            40,
-            'hsl(' + (rand(300, 0) | 0) + ', 100%, 50%)',
-            100
-          )
-        );
-      }
-    }
   };
 
   const drawNode = node => {
-    var l = node.children.length,
+    let l = node.children.length,
       point;
     while (l--) {
       point = node.children[l];
@@ -72,55 +57,57 @@ export const firework = canvas => {
   };
 
   const updatePoint = point => {
-    var dx = point.x - point.dx;
-    var dy = point.y - point.dy;
-    var c = Math.sqrt(dx * dx + dy * dy);
+    const dx = point.x - point.dx;
+    const dy = point.y - point.dy;
+    const c = Math.sqrt(dx * dx + dy * dy);
     point.dead = c < 1;
     point.x -= dx * point.velocity;
     point.y -= dy * point.velocity;
   };
 
+  let ttt = 0;
   const rad = Math.PI / 180;
   const PI2 = Math.PI * 2;
-  var ttt = 0;
 
-  function rand(max, min) {
+  const rand = (max, min) => {
     min = min || 0;
     return Math.random() * (max - min) + min;
-  }
+  };
 
-  function makeNode(x, y, radius, color, partCount) {
+  const makeNode = (x, y, radius, color, partCount) => {
     radius = radius || 0;
     partCount = partCount || 0;
-    var count = partCount;
+    const count = partCount;
 
-    var children = [],
-      kof,
-      r;
+    let r, kof;
+    const children = [];
 
     while (partCount--) {
       kof = (100 * Math.random()) | 0;
       r = (radius * Math.random()) | 0;
       children.push({
-        x: x,
-        y: y,
+        x,
+        y,
+        color,
+        velocity: rand(1, 0.05),
         dx: x + r * Math.cos(ttt * kof * rad),
-        dy: y + r * Math.sin(ttt * kof * rad),
-        color: color,
-        velocity: rand(1, 0.05)
+        dy: y + r * Math.sin(ttt * kof * rad)
       });
       ttt++;
     }
 
-    return {
-      radius: radius,
-      count: count,
-      color: color,
-      x: x,
-      y: y,
-      children: children
-    };
-  }
+    return { x, y, color, count, radius, children };
+  };
 
   draw();
+  return color =>
+    nodes.push(
+      makeNode(
+        (Math.random() * w) | 0,
+        (Math.random() * h) | 0,
+        10,
+        `rgb(${color})`,
+        30
+      )
+    );
 };
