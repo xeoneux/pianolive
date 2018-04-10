@@ -14,11 +14,17 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', socket => {
+  socket.on('room', room => {
+    room = room || 'default';
+    socket.join(room);
+  });
   socket.on('noteOn', data => {
-    socket.broadcast.emit('noteOn', data);
+    const room = JSON.parse(data).room || 'default';
+    socket.in(room).broadcast.emit('noteOn', data);
   });
   socket.on('noteOff', data => {
-    socket.broadcast.emit('noteOff', data);
+    const room = JSON.parse(data).room || 'default';
+    socket.in(room).broadcast.emit('noteOff', data);
   });
   console.log('a user connected');
 });

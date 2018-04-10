@@ -54,6 +54,14 @@ export default class App extends React.Component {
 
   componentWillMount() {
     const AC = window.AudioContext || window.webkitAudioContext;
+    const hash = window.location.hash.substring(1);
+    const color = getRandomColor();
+    roomContainer.setState({
+      color,
+      room: hash,
+      rgb: hexToRgb(color),
+      user: getRandomName()
+    });
     Soundfont.instrument(new AC(), 'acoustic_grand_piano').then(piano => {
       this.setState(
         {
@@ -67,6 +75,9 @@ export default class App extends React.Component {
         () => {
           const socket = this.state.socket;
           if (socket) {
+            socket.on('connect', () => {
+              socket.emit('room', hash);
+            });
             socket.on('noteOn', data => {
               data = JSON.parse(data);
               this.toggle(data.note, true, false, data.color);
@@ -83,12 +94,6 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.setState({ firework: firework(this.canvas) });
-    const color = getRandomColor();
-    roomContainer.setState({
-      color,
-      rgb: hexToRgb(color),
-      user: getRandomName()
-    });
   }
 
   render() {
