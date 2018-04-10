@@ -10,6 +10,7 @@ import KeysContainer, { keysContainer } from '../containers/Keys';
 import RoomContainer, { roomContainer } from '../containers/Room';
 import { getNoteForKey } from '../tools/Marker';
 import { firework } from '../tools/Canvas';
+import UsersContainer, { usersContainer } from '../containers/Users';
 
 const nameDynamicStyle = color => ({
   textShadow: `0 0 5px #fff, 0 0 10px #fff, 0 0 20px ${color}, 0 0 30px ${color}`
@@ -79,7 +80,7 @@ export default class App extends React.Component {
           if (socket) {
             socket.on('usersInRoom', data => {
               data = JSON.parse(data);
-              console.log(data);
+              usersContainer.setState({ users: data.users });
             });
             socket.on('noteOn', data => {
               data = JSON.parse(data);
@@ -134,6 +135,20 @@ export default class App extends React.Component {
                 }}
               />
               <p className="Room">[{room.state.room}]</p>
+              <Subscribe to={[UsersContainer]}>
+                {users => (
+                  <div>
+                    {users.state.users.map(user => (
+                      <p
+                        key={user}
+                        style={{ color: 'white', textAlign: 'center' }}
+                      >
+                        {user}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </Subscribe>
             </form>
           )}
         </Subscribe>

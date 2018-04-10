@@ -22,6 +22,10 @@ io.on('connection', socket => {
     console.log(user, 'joined', room);
     pianists[socket.id] = { user, room };
     socket.join(room);
+    socket.emit(
+      'usersInRoom',
+      JSON.stringify({ users: fetchUsers(socket, room) })
+    );
     socket
       .in(room)
       .emit('usersInRoom', JSON.stringify({ users: fetchUsers(socket, room) }));
