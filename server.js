@@ -32,12 +32,23 @@ io.on('connection', socket => {
   });
   socket.on('noteOn', data => {
     const room = JSON.parse(data).room || 'default';
-    console.log(data);
     socket.in(room).broadcast.emit('noteOn', data);
   });
   socket.on('noteOff', data => {
     const room = JSON.parse(data).room || 'default';
     socket.in(room).broadcast.emit('noteOff', data);
+  });
+  socket.on('nameChange', name => {
+    const pianist = pianists[socket.id];
+    if (pianist) {
+      pianist.user = name;
+      socket
+        .in(pianist.room)
+        .emit(
+          'usersInRoom',
+          JSON.stringify({ users: fetchUsers(socket, pianist.room) })
+        );
+    }
   });
   socket.on('disconnect', () => {
     const user = pianists[socket.id];

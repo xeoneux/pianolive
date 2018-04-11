@@ -54,6 +54,12 @@ export default class App extends React.Component {
     this.toggle(note, true, true);
   };
 
+  handleNameChange = event => {
+    event.preventDefault();
+    const socket = this.state.socket;
+    if (socket) socket.emit('nameChange', roomContainer.state.user);
+  };
+
   componentWillMount() {
     const AC = window.AudioContext || window.webkitAudioContext;
     const hash = window.location.hash.substring(1);
@@ -129,14 +135,14 @@ export default class App extends React.Component {
         </Subscribe>
         <Subscribe to={[RoomContainer]}>
           {room => (
-            <form>
+            <form onSubmit={this.handleNameChange}>
               <input
                 className="Name"
-                style={nameDynamicStyle(room.state.color)}
                 value={room.state.user}
-                onChange={event => {
-                  roomContainer.setState({ user: event.target.value });
-                }}
+                style={nameDynamicStyle(room.state.color)}
+                onChange={event =>
+                  roomContainer.setState({ user: event.target.value })
+                }
               />
               <p className="Room">[{room.state.room}]</p>
               <Subscribe to={[UsersContainer]}>
