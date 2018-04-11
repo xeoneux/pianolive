@@ -62,12 +62,11 @@ export default class App extends React.Component {
 
   componentWillMount() {
     const AC = window.AudioContext || window.webkitAudioContext;
-    const hash = window.location.hash.substring(1);
-    console.log(hash);
+    const room = window.location.pathname.substring(1);
     const color = getRandomColor();
     roomContainer.setState({
+      room,
       color,
-      room: hash,
       rgb: hexToRgb(color),
       user: getRandomName()
     });
@@ -104,7 +103,7 @@ export default class App extends React.Component {
               socket.emit(
                 'room',
                 JSON.stringify({
-                  room: hash,
+                  room: roomContainer.state.room,
                   user: roomContainer.state.user,
                   color: roomContainer.state.color
                 })
@@ -154,7 +153,12 @@ export default class App extends React.Component {
                     {users.state.users.map(pianist => (
                       <p
                         key={pianist.user}
-                        style={{ color: pianist.color, textAlign: 'center' }}
+                        style={{
+                          fontSize: '40px',
+                          textAlign: 'center',
+                          color: pianist.color,
+                          fontFamily: 'East Sea Dokdo'
+                        }}
                       >
                         {pianist.user}
                       </p>
