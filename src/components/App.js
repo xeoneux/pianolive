@@ -88,7 +88,7 @@ export default class App extends React.Component {
               data = JSON.parse(data);
               usersContainer.setState({
                 users: data.users.filter(
-                  user => user !== roomContainer.state.user
+                  pianist => pianist.user !== roomContainer.state.user
                 )
               });
             });
@@ -105,7 +105,8 @@ export default class App extends React.Component {
                 'room',
                 JSON.stringify({
                   room: hash,
-                  user: roomContainer.state.user
+                  user: roomContainer.state.user,
+                  color: roomContainer.state.color
                 })
               );
             });
@@ -144,16 +145,18 @@ export default class App extends React.Component {
                   roomContainer.setState({ user: event.target.value })
                 }
               />
-              <p className="Room">[{room.state.room}]</p>
+              {room.state.room ? (
+                <p className="Room">[{room.state.room}]</p>
+              ) : null}
               <Subscribe to={[UsersContainer]}>
                 {users => (
                   <div>
-                    {users.state.users.map(user => (
+                    {users.state.users.map(pianist => (
                       <p
-                        key={user}
-                        style={{ color: 'white', textAlign: 'center' }}
+                        key={pianist.user}
+                        style={{ color: pianist.color, textAlign: 'center' }}
                       >
-                        {user}
+                        {pianist.user}
                       </p>
                     ))}
                   </div>

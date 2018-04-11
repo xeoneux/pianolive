@@ -17,18 +17,13 @@ const pianists = {};
 
 io.on('connection', socket => {
   socket.on('room', data => {
-    let { room, user } = JSON.parse(data);
+    let { room, user, color } = JSON.parse(data);
     room = room || 'default';
     console.log(user, 'joined', room);
-    pianists[socket.id] = { user, room };
+    pianists[socket.id] = { room, user, color };
     socket.join(room);
-    socket.emit(
-      'usersInRoom',
-      JSON.stringify({ users: fetchUsers(socket, room) })
-    );
-    socket
-      .in(room)
-      .emit('usersInRoom', JSON.stringify({ users: fetchUsers(socket, room) }));
+    socket.emit('usersInRoom', fetchUsers(socket, room));
+    socket.in(room).emit('usersInRoom', fetchUsers(socket, room));
   });
   socket.on('noteOn', data => {
     const room = JSON.parse(data).room || 'default';
@@ -44,10 +39,7 @@ io.on('connection', socket => {
       pianist.user = name;
       socket
         .in(pianist.room)
-        .emit(
-          'usersInRoom',
-          JSON.stringify({ users: fetchUsers(socket, pianist.room) })
-        );
+        .emit('usersInRoom', fetchUsers(socket, pianist.room));
     }
   });
   socket.on('disconnect', () => {
@@ -56,12 +48,7 @@ io.on('connection', socket => {
       const room = pianists[socket.id].room;
       console.log(pianists[socket.id].user, 'left', room);
       delete pianists[socket.id];
-      socket
-        .in(room)
-        .emit(
-          'usersInRoom',
-          JSON.stringify({ users: fetchUsers(socket, room) })
-        );
+      socket.in(room).emit('usersInRoom', fetchUsers(socket, room));
     }
   });
 });
@@ -72,9 +59,10 @@ server.listen(process.env.PORT || 4000, () => {
 
 const fetchUsers = (socket, room) => {
   const roomFound = io.sockets.adapter.rooms[room];
+  let users = [];
   if (roomFound) {
     const ids = Object.keys(roomFound.sockets);
-    return ids.map(id => pianists[id].user);
+    users = ids.map(id => pianists[id]);
   }
-  return [];
+  return JSON.stringify({ users });
 };
