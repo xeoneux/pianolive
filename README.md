@@ -3,7 +3,7 @@
 </h1>
 
 <div align="center">
-  :musical_score:
+  :notes:
 </div>
 <div align="center">
   <strong>Piano for All</strong>
@@ -24,7 +24,7 @@
       Demo
     </a>
     <span> | </span>
-    <a href="https://github.com/xeoneux/pianolive">
+    <a href="https://github.com/procliveteem/pianolive">
       GitHub
     </a>
   </h3>
